@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang=en-US dir=ltr>
+  	<head>
+		<meta charset=utf-8>
+
+		<title>GravityTrail</title>
+		<meta name=description content='Distance-time trajectory visualizer'>
+		<meta name=author content='Xing Liu'>
+		<meta name=viewport content='width=device-width, initial-scale=1.0'>
+
+		<link rel=icon type=image/png href=/icon.png>
+		<style>
+html, body{
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+    </style>
+	</head>
+  <body>
+<script src="https://flems.io/flems.html" type="text/javascript" charset="utf-8"></script>
+<script>
+Flems(document.body, {
+    files: [
+      {
+        name: '.html',
+        content: '<canvas width=1000 height=1000></canvas>'
+      },
+      {
+        name: '.js',
+        content: `
+const canvas = document.querySelector('canvas')
+const context = canvas.getContext('2d')
+let start = performance.now()
+let right_before = 0
+
+const thing_size = 20
+const canvas_size = 1000
+const offset = 0.9*canvas_size
+
+const things = {
+  object: {
+    initial_distance: 0,
+    initial_velocity: 100,
+    initial_acceleration: -10 // gravity
+  },
+  // calculation_2: {
+  //   initial_distance: 500,
+  //   initial_velocity: 0,
+  //   initial_acceleration: -30 // gravity
+  // },
+  // ground: {
+  //   initial_distance: 0,
+  //   initial_velocity: 0,
+  //   initial_acceleration: 0
+  // }
+}
+for(const id in things){
+  const thing = things[id]
+  thing.distance = thing.initial_distance
+}
+
+const time_stretch = 1000 // milliseconds to seconds
+let play = false
+
+const draw_thing = thing => {
+  context.fillRect(offset,canvas_size-thing_size-thing.distance,thing_size,thing_size)
+}
+
+const draw = (now) => {
+  if(!play) return
+  const time = (now - start)/time_stretch
+  const time_change = time - right_before
+
+  for(const id in things){
+    const thing = things[id]
+    context.fillStyle = 'white'
+    draw_thing(thing)
+
+    thing.distance = thing.initial_distance
+    + thing.initial_velocity * time
+    + 1/2 * thing.initial_acceleration * time * time
+  }
+
+  context.drawImage(context.canvas,-time_change*time_stretch, 0);
+  context.fillStyle = \`hsl(\${Math.sin(time/4)+Math.random()/10}turn,80%,80%)\`
+  context.fillRect(offset,0,thing_size,canvas_size)
+  
+  for(const id in things){
+    const thing = things[id]
+    context.fillStyle = 'white'
+    draw_thing(thing)
+
+    thing.distance = thing.initial_distance
+    + thing.initial_velocity * time
+    + 1/2 * thing.initial_acceleration * time * time
+        
+    context.fillStyle = 'black'
+    draw_thing(thing)
+  }  
+
+  right_before = time
+  requestAnimationFrame(draw)
+}
+
+document.addEventListener('click',()=>{
+  play = !play
+  start = performance.now() - start
+  draw(start)
+})
+document.addEventListener('keypress',({key})=>{
+  if(key==='c') canvas.classList.toggle('cover')
+})`
+    },
+    {
+      name: '.css',
+      content: `
+html,body{
+  margin: 0;
+  background: #486;
+}
+canvas {
+  background: #ddd;
+  width: 100vw;
+  height: 50vww;
+}
+canvas.cover{
+    clip-path: inset(0 0 0 90%);
+}`
+    }
+  ]
+})
+    </script>
+  </body>
+</html>
