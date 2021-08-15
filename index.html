@@ -28,7 +28,13 @@ Flems(document.body, {
       },
       {
         name: '.js',
-        content: `
+        content: `'GravityTrail trajectory visualizer'
+
+'Click the right panel to play and pause.'
+'Press c to toggle hiding of the trail.'
+
+// Created by Xing Liu in 2021. Built with Flems.io. Dedicated to the public domain.
+
 const canvas = document.querySelector('canvas')
 const context = canvas.getContext('2d')
 let start = performance.now()
@@ -39,12 +45,12 @@ const canvas_size = 1000
 const offset = 0.9*canvas_size
 
 const things = {
-  object: {
+  cube: {
     initial_distance: 0,
     initial_velocity: 100,
     initial_acceleration: -10 // gravity
   },
-  // calculation_2: {
+  // cube_on_superearth: {
   //   initial_distance: 500,
   //   initial_velocity: 0,
   //   initial_acceleration: -30 // gravity
